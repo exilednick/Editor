@@ -1,34 +1,31 @@
 const app = require('express')();
-
-const io = require('socket.io').listen(server);
 const fs = require('fs')
 const bodyParser = require('body-parser')
-
-const socketRouter = require('./socketRoute')
+const spawn = require("child_process").spawn;
 
 app.use(bodyParser.urlencoded({extended : true}))
-
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
-  console.log(req.body)
-  app.post('/submit',(request,response)=>{
-    console.log(request.query)
-  })
-//   fs.writeFile('script.py',`hi
-// hello`,(err,file)=>{
-//       if(err){
-//           console.log(err)
-//           res.send(err)
-//       }
-//       res.send(file)
-//   })
-})
-app.listen(process.env.PORT || 3000)
+  res.sendFile(__dirname +'/index.html');
+});
 
-// io.on('connection', (socket) => {
-//   console.log("connected");
-// })
-//app.use('/',socketRouter)
+app.post('/data', (req, res) => {
+    fs.writeFile('script.py', req.body.text)
+    .then(() => {
+      const process = spwan("python3", [
+        "script.py"
+      ])
+      process.stdout.on('data', (data) => {
+        return data
+      })
+    })
+    .then((data) => {
+      console.log(data);
+      res.send(data);
+    })
+})
+
+app.listen(process.env.PORT || 3000);
 
 
