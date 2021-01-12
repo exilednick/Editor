@@ -11,19 +11,22 @@ app.get('/', (req, res) => {
 });
 
 app.post('/data', (req, res) => {
-    fs.writeFile('script.py', req.body.text)
-    .then(() => {
-      const process = spwan("python3", [
-        "script.py"
-      ])
-      process.stdout.on('data', (data) => {
-        return data
-      })
+  let resp = {};
+  fs.writeFile('script.py', req.body.text, () => {
+    const process = spawn('python3', [
+      "./script.py"]
+    )
+    process.stdout.on('data', (data) => {
+      resp['data'] = data.toString();
+    });
+    process.stderr.on('data', (data) => {
+      resp['error'] = data.toString();
+    });
+    process.on('close', (code) => {
+      resp['code'] = code;
+      res.send(resp);
     })
-    .then((data) => {
-      console.log(data);
-      res.send(data);
-    })
+  })
 })
 
 app.listen(process.env.PORT || 3000);
