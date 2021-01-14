@@ -1,5 +1,6 @@
 <html>
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
   <body>
     <div id='editor' style = "height:400px">
     </div>
@@ -22,10 +23,11 @@
     });
 
     let submit = document.getElementById('submit');
+    let op = document.getElementById('output');
+    let e = document.getElementById('error');
+    let input = document.getElementById('input').value;
+
     submit.addEventListener('click', async (ev) => {
-      let op = document.getElementById('output');
-      let e = document.getElementById('error');
-      let input = document.getElementById('input').value;
       op.innerHTML = '';
       e.innerHTML = '';
       let data = {};
@@ -33,13 +35,14 @@
       data['text'] = quill.getText();
       data['input'] = input;
       let output = await axios.post('/data', data);
-      console.log(output);
+      
 
       if(output['data']['data']!==undefined)
         op.innerHTML=output['data']['data'];
 
       if(output['data']['error']!==undefined)
         e.innerHTML=output['data']['error'];
+        
     });
   </script>
 </html>
