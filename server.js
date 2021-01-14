@@ -12,10 +12,22 @@ app.get('/', (req, res) => {
 
 app.post('/data', (req, res) => {
   let resp = {};
+
+  fs.writeFile('input.txt', req.body.input, err => {
+    if(err)
+      return;
+  });
+
   fs.writeFile('script.py', req.body.text, () => {
+
+    const input = fs.openSync('./input.txt', 'r');
+    
     const process = spawn('python3', [
-      "./script.py"]
+      "./script.py"], {
+        stdio: [input, 'pipe', 'pipe']
+      }
     )
+
     process.stdout.on('data', (data) => {
       resp['data'] = data.toString();
     });
@@ -28,6 +40,10 @@ app.post('/data', (req, res) => {
     })
   })
 })
+
+app.get('/download', (req, res) => {
+  res.download('script.py');
+});
 
 app.listen(process.env.PORT || 3000);
 

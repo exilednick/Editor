@@ -1,2 +1,2 @@
-print("ok");
-abc
+l = list(map(int, input().split()))
+print(sum(l))

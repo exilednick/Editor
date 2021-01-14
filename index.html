@@ -3,7 +3,13 @@
   <body>
     <div id='editor' style = "height:400px">
     </div>
-    <button id="submit">Submit</button>
+    <p>Custom Input</p>
+    <textarea id='input'></textarea>
+    <br><br>
+    <button id="submit">Run</button>
+    <a href='/download'>Download</a>
+    <p id='output' label='Output'></p>
+    <p id='error' label='Error'></p>
   </body>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.js" integrity="sha512-2rUSTSAeOO02jF6eBqENNqPs1EohenJ5j+1dgDPdXSLz9nOlrr8DJk4zW/lDy8rjhGCSonW3Gx812XJQIKZKJQ==" crossorigin="anonymous"></script>
@@ -17,11 +23,23 @@
 
     let submit = document.getElementById('submit');
     submit.addEventListener('click', async (ev) => {
+      let op = document.getElementById('output');
+      let e = document.getElementById('error');
+      let input = document.getElementById('input').value;
+      op.innerHTML = '';
+      e.innerHTML = '';
       let data = {};
+
       data['text'] = quill.getText();
+      data['input'] = input;
       let output = await axios.post('/data', data);
-      //console.log(quill.getText());
       console.log(output);
+
+      if(output['data']['data']!==undefined)
+        op.innerHTML=output['data']['data'];
+
+      if(output['data']['error']!==undefined)
+        e.innerHTML=output['data']['error'];
     });
   </script>
 </html>
