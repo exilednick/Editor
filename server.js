@@ -1,10 +1,15 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
 const fs = require('fs')
 const bodyParser = require('body-parser')
 const spawn = require("child_process").spawn;
 
 app.use(bodyParser.urlencoded({extended : true}))
 app.use(bodyParser.json())
+app.use(express.static(__dirname + '/public'));
+let cnt = 0;
+
+let mappings = {};
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname +'/index.html');
@@ -13,17 +18,21 @@ app.get('/', (req, res) => {
 app.post('/data', (req, res) => {
   let resp = {};
 
-  fs.writeFile('input.txt', req.body.input, err => {
+  if(!(req.body.hash in mappings))
+    cnt+=1;
+  mappings[req.body.hash] = cnt;
+
+  fs.writeFile(`input${cnt}.txt`, req.body.input, err => {
     if(err)
       return;
   });
 
-  fs.writeFile('script.py', req.body.text, () => {
+  fs.writeFile(`script${cnt}.py`, req.body.text, () => {
 
-    const input = fs.openSync('./input.txt', 'r');
+    const input = fs.openSync(`./input${cnt}.txt`, 'r');
     
     const process = spawn('python3', [
-      "./script.py"], {
+      `./script${cnt}.py`], {
         stdio: [input, 'pipe', 'pipe']
       }
     )
@@ -42,9 +51,8 @@ app.post('/data', (req, res) => {
 })
 
 app.get('/download', (req, res) => {
-  res.download('script.py');
+  let num = mappings[req.query.hash];
+  res.download(`script${num}.py`);
 });
 
 app.listen(process.env.PORT || 3000);
-
-

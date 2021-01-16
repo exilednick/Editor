@@ -1,0 +1,31 @@
+#input {
+    position: relative;
+    left: 1200px;
+    bottom: 500px;
+}
+#editor {
+    position: relative;
+}
+#output {
+    position: relative;
+    left: 1200px;
+    bottom: 500px;
+}
+.btn {
+    position: relative;
+    bottom: 500px;
+    left: 750px;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 48px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+}
+#download {
+    background-color: #008CBA; /* Blue */
+    left: 730px;
+}
